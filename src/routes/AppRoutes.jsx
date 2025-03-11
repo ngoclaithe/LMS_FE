@@ -7,7 +7,7 @@ import HomePage from '../pages/HomePage';
 import DashboardPage from '../pages/Admin/DashboardPage';
 import CoursePage from '../pages/Admin/CoursePage';
 import CourseDetailPage from '../pages/CourseDetail';
-// import LoginPage from '../pages/LoginPage';
+import LoginPage from '../pages/LoginPage';
 // import RegisterPage from '../pages/RegisterPage';
 // import PublicCoursesPage from '../pages/PublicCoursesPage';
 // import LanguageLearningPage from '../pages/LanguageLearningPage';
@@ -26,7 +26,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-
+      <Route path="/login" element={<LoginPage/>} />
 
 
 

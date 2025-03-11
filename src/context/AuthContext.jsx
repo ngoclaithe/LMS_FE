@@ -1,101 +1,54 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-const AuthContext = createContext();
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('auth_token');
-        
-        if (token) {
-          // const response = await fetch('/api/validate-token', { ... });
-          
-          setCurrentUser({
-            id: 1,
-            name: 'Người dùng',
-            email: 'user@example.com',
-            avatar: null,
-          });
-          setIsAuthenticated(true);
-        } else {
-          setCurrentUser(null);
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error('Lỗi xác thực:', error);
-        setCurrentUser(null);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
-    setIsLoading(true);
-    try {
-      // const response = await fetch('/api/login', { ... });
-      
-      const mockUser = {
-        id: 1,
-        name: 'Người dùng',
-        email,
-        avatar: null,
-      };
-      
-      localStorage.setItem('auth_token', 'mock_token_example');
-      
-      setCurrentUser(mockUser);
+  const checkAuth = () => {
+    const token = sessionStorage.getItem('token');
+    const role = sessionStorage.getItem('role');
+    
+    if (token && role) {
       setIsAuthenticated(true);
-      return { success: true };
-    } catch (error) {
-      console.error('Lỗi đăng nhập:', error);
-      return { success: false, error: 'Đăng nhập thất bại' };
-    } finally {
-      setIsLoading(false);
+      setUserRole(role);
     }
+    setLoading(false);
+  };
+
+  const login = (token, role, email) => {
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('role', role);
+    sessionStorage.setItem('email', email);
+    setIsAuthenticated(true);
+    setUserRole(role);
   };
 
   const logout = () => {
-    localStorage.removeItem('auth_token');
-    setCurrentUser(null);
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('email');
     setIsAuthenticated(false);
+    setUserRole(null);
   };
 
-  const register = async (name, email, password) => {
-    setIsLoading(true);
-    try {
-      // const response = await fetch('/api/register', { ... });
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Lỗi đăng ký:', error);
-      return { success: false, error: 'Đăng ký thất bại' };
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+    </div>;
+  }
 
-  const value = {
-    currentUser,
-    isAuthenticated,
-    isLoading,
-    login,
-    logout,
-    register
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-export default AuthProvider;
+export const useAuth = () => useContext(AuthContext);

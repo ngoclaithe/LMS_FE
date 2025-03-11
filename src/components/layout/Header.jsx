@@ -1,14 +1,31 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
-import UserAvatar from '../layout/UserAvatar';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleAvatarClick = () => {
+    setShowDropdown((prev) => !prev);
+  };
+
+  const handleProfileClick = () => {
+    setShowDropdown(false);
+    navigate('/profile');
+  };
+
+  const handleLogout = () => {
+    logout();
+    setShowDropdown(false);
+  };
+
   return (
     <header className="bg-white py-4 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-
           <Link to="/" className="flex items-center">
             <img src="/assets/logo.png" alt="Logo" className="h-8 w-auto" />
           </Link>
@@ -25,19 +42,55 @@ const Header = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link to="/my-course" className="text-gray-600 hover:text-blue-500 flex items-center">
-              <img src="/assets/my_course.png" alt="My course" className="h-4 w-4 mr-1" />
-              My course
-            </Link>
-            <Link to="/my-badge" className="text-gray-600 hover:text-blue-500 flex items-center">
-              <img src="/assets/my_badge.png" alt="My badge" className="h-4 w-4 mr-1" />
-              My badge
-            </Link>
+            {isAuthenticated && (
+              <>
+                <Link to="/my-course" className="text-gray-600 hover:text-blue-500 flex items-center">
+                  <img src="/assets/my_course.png" alt="My course" className="h-4 w-4 mr-1" />
+                  My course
+                </Link>
+                <Link to="/my-badge" className="text-gray-600 hover:text-blue-500 flex items-center">
+                  <img src="/assets/my_badge.png" alt="My badge" className="h-4 w-4 mr-1" />
+                  My badge
+                </Link>
+              </>
+            )}
             <Link to="/leaderboard" className="text-gray-600 hover:text-blue-500 flex items-center">
               <img src="/assets/leader_board.png" alt="Leaderboard" className="h-4 w-4 mr-1" />
               Leaderboard
             </Link>
-            <UserAvatar />
+
+            {isAuthenticated ? (
+              <div className="relative">
+                <button onClick={handleAvatarClick} className="flex items-center">
+                  <img src="/assets/avatar.png" alt="User" className="h-8 w-8 rounded-full" />
+                </button>
+                {showDropdown && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50">
+                    <button
+                      onClick={handleProfileClick}
+                      className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Thông tin cá nhân
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link to="/login" className="px-4 py-2 text-gray-600 hover:text-blue-500">
+                  Login
+                </Link>
+                <Link to="/register" className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                  Register
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
