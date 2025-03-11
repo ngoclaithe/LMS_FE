@@ -1,5 +1,5 @@
-import React, { useState, useEffect, navigate } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FaCalendarAlt, FaClock, FaInfoCircle, FaMoneyBillWave } from 'react-icons/fa';
 import Layout from '../components/layout/Layout';
@@ -7,6 +7,7 @@ import { getCourseById } from '../services/apiCourse';
 
 const CourseDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
