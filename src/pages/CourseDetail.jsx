@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, navigate } from 'react';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FaCalendarAlt, FaClock, FaInfoCircle, FaMoneyBillWave } from 'react-icons/fa';
@@ -6,7 +6,7 @@ import Layout from '../components/layout/Layout';
 import { getCourseById } from '../services/apiCourse';
 
 const CourseDetailPage = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,12 +65,12 @@ const CourseDetailPage = () => {
       <div className="container mx-auto px-4 py-8">
 
         <div className="relative w-full h-64 rounded-xl overflow-hidden mb-8">
-          <img 
-            src={course.avatar || '/default-course-cover.jpg'} 
+          <img
+            src={course.avatar || '/default-course-cover.jpg'}
             alt={course.course_name}
             className="w-full h-full object-cover"
             onError={(e) => {
-              e.target.onerror = null; 
+              e.target.onerror = null;
               e.target.src = '/default-course-cover.jpg';
             }}
           />
@@ -108,7 +108,7 @@ const CourseDetailPage = () => {
           <div className="w-full md:w-1/3">
             <div className="bg-white rounded-xl shadow-md p-6 sticky top-24">
               <h3 className="text-xl font-bold mb-4">Thông tin khóa học</h3>
-              
+
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <FaCalendarAlt className="text-blue-500 mt-1" />
@@ -119,7 +119,7 @@ const CourseDetailPage = () => {
                     </p>
                   </div>
                 </li>
-                
+
                 <li className="flex items-start gap-3">
                   <FaMoneyBillWave className="text-blue-500 mt-1" />
                   <div>
@@ -129,7 +129,7 @@ const CourseDetailPage = () => {
                     </p>
                   </div>
                 </li>
-                
+
                 <li className="flex items-start gap-3">
                   <FaInfoCircle className="text-blue-500 mt-1" />
                   <div>
@@ -139,7 +139,7 @@ const CourseDetailPage = () => {
                     </p>
                   </div>
                 </li>
-                
+
                 <li className="flex items-start gap-3">
                   <FaClock className="text-blue-500 mt-1" />
                   <div>
@@ -152,12 +152,13 @@ const CourseDetailPage = () => {
               </ul>
 
               <div className="mt-6">
-                <button 
+                <button
+                  onClick={() => navigate(`/courses/${id}/enroll`)}
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition duration-300"
                 >
                   Đăng ký khóa học
                 </button>
-                
+
                 {course.price === 0 && (
                   <p className="text-center text-green-600 mt-2 text-sm font-medium">
                     Khóa học này hoàn toàn miễn phí!
