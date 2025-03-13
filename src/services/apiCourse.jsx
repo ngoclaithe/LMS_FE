@@ -38,7 +38,15 @@ export const getAllCoursesByCourseType = async (course_type) => {
         throw error;
     }
 };
-
+export const getAllCoursesByCourseName = async (course_name) => {
+    try {
+        const response = await apiCourse.get(`/name/${course_name}`);
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách khóa học theo tên:', error);
+        throw error;
+    }
+};
 export const getCourseById = async (id) => {
     try {
         const response = await apiCourse.get(`/${id}`);
@@ -78,3 +86,4 @@ export const deleteCourse = async (id) => {
         throw error;
     }
 };
+

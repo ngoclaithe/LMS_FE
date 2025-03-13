@@ -18,6 +18,24 @@ export const getAllUsers = async () => {
     throw error;
   }
 };
+export const getAllStudents = async () => {
+  try {
+    const response = await apiUser.get('/students');
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách sinh viên:', error);
+    throw error;
+  }
+};
+export const getAllTeachers = async () => {
+  try {
+    const response = await apiUser.get('/teachers');
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách giáo viên:', error);
+    throw error;
+  }
+};
 
 export const getUserById = async (id) => {
   try {
@@ -49,9 +67,13 @@ export const updateUser = async (id, userData) => {
   }
 };
 
-export const deleteUser = async (id) => {
+export const deleteUser = async (id, token) => {
   try {
-    const response = await apiUser.delete(`/${id}`);
+    const response = await apiUser.delete(`/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Lỗi khi xóa người dùng:', error);

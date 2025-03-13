@@ -1,30 +1,55 @@
-import { Home, BookOpen, CreditCard, Users, User, List, ShoppingBag, Package, Store } from 'lucide-react';
+import { Home, BookOpen, CreditCard, GraduationCap, UserCheck, List, ShoppingBag, Package, Store, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-export const Sidebar = () => {
+export const Sidebar = ({ role }) => {
   const [openSubMenu, setOpenSubMenu] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const menuItems = [
-    // { icon: Home, label: 'Trang chủ', path: '/dashboard' },
-    { icon: BookOpen, label: 'Quản lý khóa học', path: '/manage-courses' },
-    { icon: CreditCard, label: 'Quản lý thanh toán', path: '/manage-payments' }, 
-    { icon: Users, label: 'Quản lý sinh viên', path: '/manage-students' },
-    // {
-    //   icon: Store,
-    //   label: 'Quản lý cửa hàng',
-    //   subMenu: [
-    //     { icon: List, label: 'Danh sách cửa hàng', path: '/shops' },
-    //     { icon: ShoppingBag, label: 'Tạo hàng hóa mới', path: '/merchandise/create' },
-    //     { icon: Package, label: 'Cập nhật hàng hóa', path: '/merchandise/update' },
-    //   ]
-    // },
-    { icon: User, label: 'Quản lý người dùng', path: '/manage-users' }
+  const adminMenuItems = [
+    {
+      icon: Store,
+      label: 'Quản lý người dùng',
+      subMenu: [
+        { icon: GraduationCap, label: 'Sinh viên', path: '/manage-students' },
+        { icon: UserCheck, label: 'Giảng viên', path: '/manage-teachers' },
+      ],
+    },
+    {
+      icon: BookOpen,
+      label: 'Quản lý khóa học',
+      subMenu: [
+        { icon: List, label: 'Danh sách khóa học', path: '/manage-courses' },
+        { icon: Package, label: 'Cập nhật nội dung', path: '/update-course' },
+      ],
+    },
+    {
+      icon: CreditCard,
+      label: 'Quản lý giao dịch',
+      subMenu: [
+        { icon: ShoppingBag, label: 'Lịch sử thanh toán', path: '/payment-history' },
+        { icon: CreditCard, label: 'Phương thức thanh toán', path: '/payment-methods' },
+      ],
+    },
   ];
 
+  const teacherMenuItems = [
+    {
+      icon: BookOpen,
+      label: 'Quản lý khóa học',
+      path: '/manage-courses',
+    },
+    {
+      icon: FileText,
+      label: 'Thư viện tài liệu',
+      path: '/document-library',
+    },
+  ];
+
+  const menuItems = role === 'admin' ? adminMenuItems : teacherMenuItems;
+
   const handleSubMenuToggle = (index) => {
-    setOpenSubMenu(openSubMenu === index ? null : index); 
+    setOpenSubMenu(openSubMenu === index ? null : index);
   };
 
   return (

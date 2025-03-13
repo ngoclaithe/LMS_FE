@@ -9,6 +9,8 @@ import CoursePage from '../pages/Admin/CoursePage';
 import CourseDetailPage from '../pages/CourseDetail';
 import LoginPage from '../pages/LoginPage';
 import EnrollPage from '../pages/EnrollPage';
+import ManageStudentPage from '../pages/Admin/ManageStudents';
+import UpdateCoursePage from '../pages/Admin/UpdateCoursePage';
 // import RegisterPage from '../pages/RegisterPage';
 // import PublicCoursesPage from '../pages/PublicCoursesPage';
 // import LanguageLearningPage from '../pages/LanguageLearningPage';
@@ -41,7 +43,8 @@ const AppRoutes = () => {
       <Route path="/manage-courses" element={<CoursePage/>} />
       <Route path="/course/:id" element={<CourseDetailPage />} />
       <Route path="/courses/:id/enroll" element={<EnrollPage />} />
-
+      <Route path="/manage-students" element={<ManageStudentPage/>} />
+      <Route path="/update-course" element={<UpdateCoursePage/>} />
       {/* <Route path="/public-courses" element={<PublicCoursesPage />} />
       <Route path="/language-learning" element={<LanguageLearningPage />} />
       <Route path="/quizzes" element={<QuizzesPage />} />
