@@ -16,12 +16,15 @@ import {
   deleteDocument 
 } from '../../services/apiDocument';
 import { 
-  Button, Table, Modal, Form, Input, DatePicker, InputNumber, Upload, message, Popconfirm, Spin, Select 
+  Button, Card, Modal, Form, Input, DatePicker, InputNumber, Upload, message, 
+  Popconfirm, Spin, Select, Row, Col, Typography, Collapse, Table, List, Tag, Space 
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 const { Option } = Select;
+const { Title, Text } = Typography;
+const { Panel } = Collapse;
 
 const UpdateCoursePage = () => {
   // State cho khóa học
@@ -32,6 +35,7 @@ const UpdateCoursePage = () => {
   // State cho Lesson và Document
   const [lessons, setLessons] = useState([]);
   const [documents, setDocuments] = useState({}); // { lessonId: [docs] }
+  const [expandedLessonId, setExpandedLessonId] = useState(null);
 
   // Modal control cho lesson
   const [lessonModalVisible, setLessonModalVisible] = useState(false);
@@ -52,7 +56,7 @@ const UpdateCoursePage = () => {
       const result = await getAllCoursesByCourseName(value);
       setCourses(result);
     } catch (error) {
-      message.error('Lỗi khi tìm khóa học');
+      console.log("không tìm thấy");
     }
   };
 
@@ -76,7 +80,7 @@ const UpdateCoursePage = () => {
       }
       setDocuments(docsMap);
     } catch (error) {
-      message.error('Lỗi khi tải bài giảng của khóa học');
+      console.log('Lỗi khi tải bài giảng của khóa học');
     }
   };
 
@@ -187,11 +191,19 @@ const UpdateCoursePage = () => {
     }
   };
 
+  const toggleLessonExpand = (lessonId) => {
+    if (expandedLessonId === lessonId) {
+      setExpandedLessonId(null);
+    } else {
+      setExpandedLessonId(lessonId);
+    }
+  };
+
   // ====== Render ======
   return (
     <LayoutAdminDashboard>
       <div style={{ padding: '20px' }}>
-        <h2>Tìm kiếm khóa học</h2>
+        <Title level={2}>Tìm kiếm khóa học</Title>
         <Select
           showSearch
           placeholder="Nhập tên khóa học"
@@ -212,114 +224,161 @@ const UpdateCoursePage = () => {
 
         {selectedCourse && (
           <div>
-            <h3>Thông tin khóa học: {selectedCourse.course_name}</h3>
-            {/* Các thông tin khác của khóa học có thể hiển thị tại đây */}
-
-            <h3>Danh sách bài giảng</h3>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => openLessonModal()}>
-              Tạo bài giảng
-            </Button>
-            <Table
-              dataSource={lessons}
-              rowKey="id_lesson"
-              style={{ marginTop: '20px' }}
-              columns={[
-                {
-                  title: 'Tiêu đề',
-                  dataIndex: 'title',
-                },
-                {
-                  title: 'Nội dung',
-                  dataIndex: 'content',
-                },
-                {
-                  title: 'Video URL',
-                  dataIndex: 'video_url',
-                },
-                {
-                  title: 'Thứ tự',
-                  dataIndex: 'order',
-                },
-                {
-                  title: 'Hành động',
-                  render: (text, record) => (
-                    <>
-                      <Button icon={<EditOutlined />} onClick={() => openLessonModal(record)} style={{ marginRight: 8 }}>
-                        Sửa
-                      </Button>
-                      <Popconfirm
-                        title="Bạn có chắc muốn xóa?"
-                        onConfirm={() => handleDeleteLesson(record.id_lesson)}
-                      >
-                        <Button danger icon={<DeleteOutlined />}>Xóa</Button>
-                      </Popconfirm>
-                      <Button 
-                        style={{ marginLeft: 8 }} 
-                        onClick={() => openDocModal(record)}
-                        icon={<UploadOutlined />}
-                      >
-                        Tài liệu
-                      </Button>
-                    </>
-                  ),
-                },
-              ]}
-            />
-
-            {/* Hiển thị danh sách document cho từng lesson */}
-            {lessons.map(lesson => (
-              <div key={lesson.id_lesson} style={{ border: '1px solid #ccc', padding: '10px', marginTop: '20px' }}>
-                <h4>Tài liệu của bài giảng: {lesson.title}</h4>
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => openDocModal(lesson)}>
-                  Tạo tài liệu
+            <Card>
+              <Title level={3}>Thông tin khóa học: {selectedCourse.course_name}</Title>
+              <div style={{ marginBottom: '20px' }}>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => openLessonModal()}
+                >
+                  Tạo bài giảng mới
                 </Button>
-                <Table
-                  dataSource={documents[lesson.id_lesson] || []}
-                  rowKey="id_document"
-                  style={{ marginTop: '10px' }}
-                  columns={[
-                    {
-                      title: 'Tiêu đề',
-                      dataIndex: 'title',
-                    },
-                    {
-                      title: 'Mô tả',
-                      dataIndex: 'description',
-                    },
-                    {
-                      title: 'File URL',
-                      dataIndex: 'file_url',
-                    },
-                    {
-                      title: 'Hành động',
-                      render: (text, docRecord) => (
-                        <>
-                          <Button 
-                            icon={<EditOutlined />} 
-                            onClick={() => openDocModal(lesson, docRecord)} 
-                            style={{ marginRight: 8 }}
+              </div>
+
+              {/* Lessons hiển thị theo dạng list ngang */}
+              <div style={{ overflowX: 'auto' }}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                  {lessons.map((lesson, index) => (
+                    <div key={lesson.id_lesson} style={{ marginRight: '15px' }}>
+                      <Card
+                        hoverable
+                        style={{
+                          width: 280,
+                          marginBottom: '15px',
+                          borderColor: expandedLessonId === lesson.id_lesson ? '#1890ff' : undefined,
+                          boxShadow: expandedLessonId === lesson.id_lesson ? '0 0 10px rgba(24, 144, 255, 0.5)' : undefined
+                        }}
+                        onClick={() => toggleLessonExpand(lesson.id_lesson)}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <Tag color="blue">Bài {lesson.order || index + 1}</Tag>
+                          </div>
+                          <div>
+                            {expandedLessonId === lesson.id_lesson ? <DownOutlined /> : <RightOutlined />}
+                          </div>
+                        </div>
+                        <Title level={4} style={{ margin: '10px 0' }}>{lesson.title}</Title>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+                          <Button
+                            size="small"
+                            icon={<EditOutlined />}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openLessonModal(lesson);
+                            }}
                           >
                             Sửa
                           </Button>
                           <Popconfirm
                             title="Bạn có chắc muốn xóa?"
-                            onConfirm={() => handleDeleteDocument(lesson.id_lesson, docRecord.id_document)}
+                            onConfirm={(e) => {
+                              e.stopPropagation();
+                              handleDeleteLesson(lesson.id_lesson);
+                            }}
+                            onCancel={(e) => e.stopPropagation()}
                           >
-                            <Button danger icon={<DeleteOutlined />}>Xóa</Button>
+                            <Button
+                              danger
+                              size="small"
+                              icon={<DeleteOutlined />}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Xóa
+                            </Button>
                           </Popconfirm>
-                        </>
-                      ),
-                    },
-                  ]}
-                />
+                        </div>
+                      </Card>
+
+                      {/* Hiển thị documents khi mở rộng */}
+                      {expandedLessonId === lesson.id_lesson && (
+                        <Card
+                          title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span>Tài liệu của bài giảng</span>
+                              <Button
+                                type="primary"
+                                size="small"
+                                icon={<PlusOutlined />}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDocModal(lesson);
+                                }}
+                              >
+                                Thêm tài liệu
+                              </Button>
+                            </div>
+                          }
+                          bordered={false}
+                          style={{ width: 280 }}
+                        >
+                          <div className="lesson-details">
+                            <div style={{ marginBottom: '15px' }}>
+                              <Text strong>Nội dung:</Text>
+                              <div>{lesson.content}</div>
+                            </div>
+                            
+                            {lesson.video_url && (
+                              <div style={{ marginBottom: '15px' }}>
+                                <Text strong>Video URL:</Text>
+                                <div>{lesson.video_url}</div>
+                              </div>
+                            )}
+                            
+                            <List
+                              size="small"
+                              dataSource={documents[lesson.id_lesson] || []}
+                              renderItem={doc => (
+                                <List.Item
+                                  actions={[
+                                    <Button
+                                      size="small"
+                                      icon={<EditOutlined />}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        openDocModal(lesson, doc);
+                                      }}
+                                    />,
+                                    <Popconfirm
+                                      title="Bạn có chắc muốn xóa tài liệu này?"
+                                      onConfirm={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteDocument(lesson.id_lesson, doc.id_document);
+                                      }}
+                                      onCancel={(e) => e.stopPropagation()}
+                                    >
+                                      <Button
+                                        danger
+                                        size="small"
+                                        icon={<DeleteOutlined />}
+                                        onClick={(e) => e.stopPropagation()}
+                                      />
+                                    </Popconfirm>
+                                  ]}
+                                >
+                                  <List.Item.Meta
+                                    title={doc.title}
+                                    description={doc.description}
+                                  />
+                                </List.Item>
+                              )}
+                              locale={{ emptyText: "Chưa có tài liệu" }}
+                            />
+                          </div>
+                        </Card>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            </Card>
           </div>
         )}
       </div>
 
-      {/* Modal Lesson */}
-      <Modal
+{/* Modal Lesson */}
+<Modal
         title={currentLesson ? "Cập nhật bài giảng" : "Tạo bài giảng"}
         visible={lessonModalVisible}
         onCancel={() => { setLessonModalVisible(false); lessonForm.resetFields(); }}
